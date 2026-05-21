@@ -278,6 +278,7 @@ address { font-style: normal; }
 
 /* Branding */
 .site-branding { flex-shrink: 0; }
+.site-branding .custom-logo { height: 40px; width: auto; display: block; }
 .site-logo-link {
     display: flex;
     align-items: center;
