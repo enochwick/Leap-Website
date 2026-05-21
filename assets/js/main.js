@@ -236,15 +236,15 @@
 
     function buildParticles() {
       particles = [];
-      const count = Math.min(Math.floor((W * H) / 14000), 80);
+      const count = Math.min(Math.floor((W * H) / 8000), 120);
       for (let i = 0; i < count; i++) {
         particles.push({
           x:  Math.random() * W,
           y:  Math.random() * H,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          r:  Math.random() * 1.5 + 0.5,
-          o:  Math.random() * 0.4 + 0.1,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          r:  Math.random() * 2 + 1,
+          o:  Math.random() * 0.5 + 0.3,
         });
       }
     }
@@ -258,10 +258,10 @@
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 130) {
+          if (dist < 180) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(0, 102, 255, ${(1 - dist / 130) * 0.12})`;
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = `rgba(0, 150, 255, ${(1 - dist / 180) * 0.45})`;
+            ctx.lineWidth = 0.8;
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.stroke();
@@ -273,7 +273,7 @@
       particles.forEach((p) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 191, 255, ${p.o})`;
+        ctx.fillStyle = `rgba(0, 200, 255, ${p.o})`;
         ctx.fill();
 
         p.x += p.vx;
