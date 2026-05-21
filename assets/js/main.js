@@ -220,79 +220,94 @@
     });
   }
 
-  // ── Hero Canvas (particle grid) ───────────────────────────────
+  // ── Hero Canvas (wave mesh) ───────────────────────────────────
   function setupHeroCanvas() {
     const canvas = document.getElementById('hero-canvas');
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    let particles = [], animId, W, H;
+    let animId, W, H, time = 0;
 
     function resize() {
       W = canvas.width  = canvas.offsetWidth;
       H = canvas.height = canvas.offsetHeight;
-      buildParticles();
     }
 
-    function buildParticles() {
-      particles = [];
-      const count = Math.min(Math.floor((W * H) / 8000), 120);
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x:  Math.random() * W,
-          y:  Math.random() * H,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          r:  Math.random() * 2 + 1,
-          o:  Math.random() * 0.5 + 0.3,
-        });
-      }
+    function getPoint(col, row, cols, rows) {
+      const baseX = (col / (cols - 1)) * W;
+      const baseY = (row / (rows - 1)) * H;
+      const amp   = H * 0.055;
+      const y = baseY
+        + Math.sin(col * 0.45 + time + row * 0.6) * amp
+        + Math.sin(col * 0.2  + time * 0.7 + row * 0.3) * amp * 0.5
+        + Math.sin(col * 0.8  + time * 1.4 - row * 0.2) * amp * 0.25;
+      const depth = (Math.sin(col * 0.35 + row * 0.5 + time * 0.5) + 1) / 2;
+      return { x: baseX, y, depth };
     }
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
+      time += 0.006;
 
-      // Draw connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 180) {
+      const cols = Math.floor(W / 55) + 2;
+      const rows = Math.floor(H / 55) + 2;
+
+      // Build grid
+      const grid = [];
+      for (let r = 0; r < rows; r++) {
+        grid[r] = [];
+        for (let c = 0; c < cols; c++) {
+          grid[r][c] = getPoint(c, r, cols, rows);
+        }
+      }
+
+      // Horizontal lines
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols - 1; c++) {
+          const a = grid[r][c], b = grid[r][c + 1];
+          const alpha = 0.08 + a.depth * 0.32;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(0, 160, 255, ${alpha})`;
+          ctx.lineWidth = 0.7;
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+
+      // Vertical lines
+      for (let r = 0; r < rows - 1; r++) {
+        for (let c = 0; c < cols; c++) {
+          const a = grid[r][c], b = grid[r + 1][c];
+          const alpha = 0.05 + a.depth * 0.22;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(0, 210, 255, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+
+      // Glowing nodes at intersections
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const p = grid[r][c];
+          if (p.depth > 0.6) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(0, 150, 255, ${(1 - dist / 180) * 0.45})`;
-            ctx.lineWidth = 0.8;
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
+            ctx.arc(p.x, p.y, 1 + p.depth * 1.8, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(0, 220, 255, ${0.2 + p.depth * 0.6})`;
+            ctx.fill();
           }
         }
       }
 
-      // Draw particles
-      particles.forEach((p) => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 200, 255, ${p.o})`;
-        ctx.fill();
-
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x < 0 || p.x > W) p.vx *= -1;
-        if (p.y < 0 || p.y > H) p.vy *= -1;
-      });
-
       animId = requestAnimationFrame(draw);
     }
 
-    // Pause when tab is hidden — saves CPU
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        cancelAnimationFrame(animId);
-      } else {
-        draw();
-      }
+      if (document.hidden) cancelAnimationFrame(animId);
+      else draw();
     });
 
     const ro = new ResizeObserver(resize);
