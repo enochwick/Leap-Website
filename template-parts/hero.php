@@ -3,7 +3,7 @@ $headline       = leap_field( 'hero_headline',            'The Future of AI Infr
 $subheading     = leap_field( 'hero_subheading',          'Build, deploy, and scale intelligent systems with a platform designed for teams that move fast and think big.' );
 $primary_text   = leap_field( 'hero_primary_button_text', 'Start Building Free' );
 $primary_url    = leap_field( 'hero_primary_button_url',  home_url( '/contact' ) );
-$secondary_text = leap_field( 'hero_secondary_button_text', 'How it works' );
+$secondary_text = leap_field( 'hero_secondary_button_text', '' );
 $secondary_url  = leap_field( 'hero_secondary_button_url',  '#process' );
 ?>
 
