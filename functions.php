@@ -5,7 +5,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'LEAP_VERSION', '1.0.0' );
+define( 'LEAP_VERSION', '1.0.2' );
 define( 'LEAP_DIR', get_template_directory() );
 define( 'LEAP_URI', get_template_directory_uri() );
 
@@ -44,8 +44,7 @@ function leap_enqueue_assets() {
 
     wp_enqueue_script( 'gsap-core',          'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js',            [], '3.12.5', true );
     wp_enqueue_script( 'gsap-scrolltrigger', 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js',   [ 'gsap-core' ], '3.12.5', true );
-    wp_enqueue_script( 'gsap-splittext',     'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/SplitText.min.js',       [ 'gsap-core' ], '3.12.5', true );
-    wp_enqueue_script( 'leap-main',          LEAP_URI . '/assets/js/main.js', [ 'gsap-core', 'gsap-scrolltrigger', 'gsap-splittext' ], LEAP_VERSION, true );
+    wp_enqueue_script( 'leap-main',          LEAP_URI . '/assets/js/main.js', [ 'gsap-core', 'gsap-scrolltrigger' ], LEAP_VERSION, true );
 
     wp_localize_script( 'leap-main', 'leapTheme', [
         'themeUri' => LEAP_URI,
