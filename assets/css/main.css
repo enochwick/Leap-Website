@@ -6,8 +6,8 @@
 /* ── CSS Custom Properties ─────────────────────────────────── */
 :root {
     /* Colors */
-    --color-bg:           #050508;
-    --color-bg-2:         #0a0a12;
+    --color-bg:           #1a0f0a;
+    --color-bg-2:         #221409;
     --color-bg-card:      rgba(255, 255, 255, 0.03);
     --color-bg-card-hover:rgba(255, 255, 255, 0.06);
     --color-border:       rgba(255, 255, 255, 0.07);
@@ -25,7 +25,7 @@
 
     /* Gradients */
     --gradient-brand:     linear-gradient(135deg, #0066FF 0%, #00BFFF 100%);
-    --gradient-bg:        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,102,255,0.12) 0%, transparent 70%);
+    --gradient-bg:        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(120,60,20,0.18) 0%, transparent 70%);
 
     /* Typography */
     --font-sans:          'Inter', system-ui, -apple-system, sans-serif;
