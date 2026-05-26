@@ -5,7 +5,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'LEAP_VERSION', '1.0.6' );
+define( 'LEAP_VERSION', '1.0.7' );
 define( 'LEAP_DIR', get_template_directory() );
 define( 'LEAP_URI', get_template_directory_uri() );
 
