@@ -1,5 +1,0 @@
----
-deployment:
-  tasks:
-    - find /home/esyh8mppp8be/public_html/awaqi.ai/wp-content/themes/client-custom-theme -type d -exec chmod 755 {} +
-    - find /home/esyh8mppp8be/public_html/awaqi.ai/wp-content/themes/client-custom-theme -type f -exec chmod 644 {} +
