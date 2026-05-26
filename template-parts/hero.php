@@ -8,9 +8,8 @@ $secondary_url  = leap_field( 'hero_secondary_button_url',  '#process' );
 ?>
 
 <section class="hero-section" id="hero" aria-label="Hero">
-    <!-- Animated background canvas -->
+    <!-- Animated background -->
     <div class="hero-bg" aria-hidden="true">
-        <canvas class="hero-canvas" id="hero-canvas"></canvas>
         <div class="hero-grid-lines"></div>
         <div class="hero-glow hero-glow--primary"></div>
         <div class="hero-glow hero-glow--secondary"></div>
