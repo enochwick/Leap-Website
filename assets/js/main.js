@@ -220,88 +220,89 @@
     });
   }
 
-  // ── Hero Canvas (wave mesh) ───────────────────────────────────
+  // ── Hero Canvas (medical ECG pulse) ─────────────────────────
   function setupHeroCanvas() {
     const canvas = document.getElementById('hero-canvas');
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    let animId, W, H, time = 0;
+    let animId, W, H, offset = 0;
 
     function resize() {
       W = canvas.width  = canvas.offsetWidth;
       H = canvas.height = canvas.offsetHeight;
     }
 
-    function getPoint(col, row, cols, rows) {
-      const baseX = (col / (cols - 1)) * W;
-      const baseY = (row / (rows - 1)) * H;
-      const amp   = H * 0.055;
-      const y = baseY
-        + Math.sin(col * 0.45 + time + row * 0.6) * amp
-        + Math.sin(col * 0.2  + time * 0.7 + row * 0.3) * amp * 0.5
-        + Math.sin(col * 0.8  + time * 1.4 - row * 0.2) * amp * 0.25;
-      const depth = (Math.sin(col * 0.35 + row * 0.5 + time * 0.5) + 1) / 2;
-      return { x: baseX, y, depth };
+    // PQRST ECG shape — t is 0..1 per cycle
+    function ecg(t) {
+      t = ((t % 1) + 1) % 1;
+      if (t < 0.15) return Math.sin(t / 0.15 * Math.PI) * 0.12;
+      if (t < 0.30) return 0;
+      if (t < 0.34) return -(t - 0.30) / 0.04 * 0.25;
+      if (t < 0.37) return -0.25 + (t - 0.34) / 0.03 * 1.6;
+      if (t < 0.43) return 1.35 - (t - 0.37) / 0.06 * 1.6;
+      if (t < 0.46) return -0.25 + (t - 0.43) / 0.03 * 0.25;
+      if (t < 0.62) return Math.sin((t - 0.46) / 0.16 * Math.PI) * 0.28;
+      return 0;
+    }
+
+    const lines = [
+      { yRatio: 0.22, speed: 0.6, phase: 0,    amp: 52, color: '0,255,180' },
+      { yRatio: 0.40, speed: 0.9, phase: 0.3,  amp: 44, color: '0,200,255' },
+      { yRatio: 0.58, speed: 0.7, phase: 0.6,  amp: 48, color: '0,255,180' },
+      { yRatio: 0.76, speed: 1.1, phase: 0.15, amp: 36, color: '0,160,255' },
+    ];
+
+    function drawGrid() {
+      const cols = 14, rows = 8;
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i <= cols; i++) {
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(0,220,200,0.04)';
+        ctx.moveTo(i / cols * W, 0);
+        ctx.lineTo(i / cols * W, H);
+        ctx.stroke();
+      }
+      for (let i = 0; i <= rows; i++) {
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(0,220,200,0.04)';
+        ctx.moveTo(0, i / rows * H);
+        ctx.lineTo(W, i / rows * H);
+        ctx.stroke();
+      }
+    }
+
+    function drawLine(line) {
+      const baseY  = H * line.yRatio;
+      const cycleW = W * 0.55;
+
+      ctx.beginPath();
+      for (let x = 0; x <= W; x += 2) {
+        const t   = ((x - offset * line.speed + line.phase * W) / cycleW) % 1;
+        const val = ecg(((t % 1) + 1) % 1);
+        const y   = baseY - val * line.amp;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+
+      ctx.shadowColor  = `rgba(${line.color},0.7)`;
+      ctx.shadowBlur   = 12;
+      ctx.strokeStyle  = `rgba(${line.color},0.85)`;
+      ctx.lineWidth    = 1.5;
+      ctx.stroke();
+
+      ctx.shadowBlur   = 28;
+      ctx.strokeStyle  = `rgba(${line.color},0.18)`;
+      ctx.lineWidth    = 5;
+      ctx.stroke();
+
+      ctx.shadowBlur = 0;
     }
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
-      time += 0.006;
-
-      const cols = Math.floor(W / 55) + 2;
-      const rows = Math.floor(H / 55) + 2;
-
-      // Build grid
-      const grid = [];
-      for (let r = 0; r < rows; r++) {
-        grid[r] = [];
-        for (let c = 0; c < cols; c++) {
-          grid[r][c] = getPoint(c, r, cols, rows);
-        }
-      }
-
-      // Horizontal lines
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols - 1; c++) {
-          const a = grid[r][c], b = grid[r][c + 1];
-          const alpha = 0.08 + a.depth * 0.32;
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(0, 160, 255, ${alpha})`;
-          ctx.lineWidth = 0.7;
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.stroke();
-        }
-      }
-
-      // Vertical lines
-      for (let r = 0; r < rows - 1; r++) {
-        for (let c = 0; c < cols; c++) {
-          const a = grid[r][c], b = grid[r + 1][c];
-          const alpha = 0.05 + a.depth * 0.22;
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(0, 210, 255, ${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.stroke();
-        }
-      }
-
-      // Glowing nodes at intersections
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const p = grid[r][c];
-          if (p.depth > 0.6) {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 1 + p.depth * 1.8, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 220, 255, ${0.2 + p.depth * 0.6})`;
-            ctx.fill();
-          }
-        }
-      }
-
+      offset += 1.2;
+      drawGrid();
+      lines.forEach(drawLine);
       animId = requestAnimationFrame(draw);
     }
 
