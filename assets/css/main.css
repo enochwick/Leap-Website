@@ -383,12 +383,12 @@ address { font-style: normal; }
 }
 .hero-glow--primary {
     width: 800px; height: 800px;
-    background: radial-gradient(circle, rgba(255,0,0,0.25) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0,80,255,0.3) 0%, transparent 70%);
     top: -15%; left: -15%;
 }
 .hero-glow--secondary {
     width: 700px; height: 700px;
-    background: radial-gradient(circle, rgba(200,0,50,0.18) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0,180,255,0.2) 0%, transparent 70%);
     top: 10%; right: -10%;
 }
 
