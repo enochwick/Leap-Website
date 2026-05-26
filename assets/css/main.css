@@ -354,7 +354,7 @@ address { font-style: normal; }
     align-items: center;
     padding-top: var(--header-height);
     overflow: hidden;
-    background: #FFD700;
+    background: linear-gradient(160deg, #020b18 0%, #041428 40%, #061d3a 100%);
 }
 
 .hero-bg {
